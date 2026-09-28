@@ -1,0 +1,41 @@
+# Reference Blueprint. For the existing V1, follow docs/DEPLOYMENT.md
+# to update the current service without creating a duplicate website.
+# The cron service is billable. Review Render's price before creating it.
+services:
+  - type: web
+    name: jobwatch-v1
+    runtime: node
+    plan: free
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm run db:migrate && npm start
+    healthCheckPath: /api/health
+    autoDeployTrigger: off
+    envVars:
+      - fromGroup: jobwatch-private
+  - type: cron
+    name: jobwatch-collector
+    runtime: node
+    schedule: "0 */6 * * *"
+    buildCommand: npm ci --omit=dev
+    startCommand: npm run collect
+    autoDeployTrigger: off
+    envVars:
+      - fromGroup: jobwatch-private
+
+envVarGroups:
+  - name: jobwatch-private
+    envVars:
+      - key: NODE_VERSION
+        value: 22.22.0
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_SSL
+        value: require
+      - key: APP_URL
+        sync: false
+      - key: APP_PASSWORD_HASH
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
