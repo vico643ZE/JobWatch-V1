@@ -1,0 +1,5 @@
+-- Ancien schéma V1 conservé comme point de repère, mais plus exécuté.
+-- Pour la V2 : npm run db:migrate
+-- Migration complète : supabase/migrations/001_jobwatch_v2.sql
+-- Elle conserve toute table V1 existante et crée des tables V2 privées.
+-- Ne pas créer de table publique non protégée pour les candidatures.
